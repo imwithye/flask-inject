@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_inject import Inject, inject, injector
+from flask_inject import Inject, inject
 from functools import wraps
 import logging
 
@@ -11,7 +11,7 @@ Inject(app)
 @inject("injector")
 def before_request(injector):
     injector.map("version", "v1.0")
-    mysql = "open mysql connection here"
+    mysql = "mysql connection"
     injector.map("mysql", mysql)
 
 
@@ -20,14 +20,13 @@ def before_request(injector):
 def teardown_request(exception, mysql):
     logging.info("teardown request")
     logging.info(mysql)
-    mysql = "close mysql here"
-    logging.info(mysql)
 
 
 def authentication():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            from flask_inject import injector
             injector().map("auth", "Auth Passed")
             return f(*args, **kwargs)
 
