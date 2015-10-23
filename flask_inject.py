@@ -28,25 +28,30 @@ class Inject(object):
         app.before_request(self.before_request)
 
     def before_request(self):
-        injector = self.Injector()
-        injector.map("injector", injector)
-        injector.map("app", self.app)
-        injector.map("request", request)
-        injector.map("headers", request.headers)
-        injector.map("cookies", request.cookies)
-        g._injector = injector
+        _injector = self.Injector()
+        _injector.map("injector", _injector)
+        _injector.map("app", self.app)
+        _injector.map("request", request)
+        _injector.map("headers", request.headers)
+        _injector.map("cookies", request.cookies)
+        g._injector = _injector
 
 
 def inject(*keys):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            injector = g.get("_injector")
-            assert injector is not None
+            _injector = g.get("_injector")
+            assert _injector is not None
             for key in keys:
                 assert isinstance(key, str)
-            return injector.apply(keys, f, args, kwargs)
+            return _injector.apply(keys, f, args, kwargs)
 
         return decorated_function
 
     return decorator
+
+
+def injector():
+    _injector = g.get("_injector")
+    return _injector

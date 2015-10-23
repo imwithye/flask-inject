@@ -1,5 +1,6 @@
 from flask import Flask
-from flask_inject import Inject, inject
+from flask_inject import Inject, inject, injector
+from functools import wraps
 import logging
 
 app = Flask(__name__)
@@ -23,6 +24,18 @@ def teardown_request(exception, mysql):
     logging.info(mysql)
 
 
+def authentication():
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            injector().map("auth", "Auth Passed")
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    return decorator
+
+
 @app.route("/headers")
 @inject("headers")
 def show_headers(headers):
@@ -44,6 +57,13 @@ def show_mysql(mysql):
     if mysql:
         return "success"
     return "fail"
+
+
+@app.route("/auth")
+@authentication()
+@inject("auth")
+def show_auth(auth):
+    return auth
 
 
 if __name__ == "__main__":
