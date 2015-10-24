@@ -1,4 +1,4 @@
-from flask import g, request
+from flask import g
 from functools import wraps
 
 
@@ -7,7 +7,11 @@ class Inject(object):
         def __init__(self):
             self._base = dict()
 
-        def map(self, key, value):
+        def map(self, *args, **kwargs):
+            for k, v in kwargs.iteritems():
+                self.map_to(k, v)
+
+        def map_to(self, key, value):
             assert isinstance(key, str)
             self._base[key] = value
 
@@ -29,11 +33,7 @@ class Inject(object):
 
     def before_request(self):
         _injector = self.Injector()
-        _injector.map("injector", _injector)
-        _injector.map("app", self.app)
-        _injector.map("request", request)
-        _injector.map("headers", request.headers)
-        _injector.map("cookies", request.cookies)
+        _injector.map(injector=_injector)
         g._injector = _injector
 
 
@@ -50,8 +50,3 @@ def inject(*keys):
         return decorated_function
 
     return decorator
-
-
-def injector():
-    _injector = g.get("_injector")
-    return _injector

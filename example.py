@@ -10,9 +10,9 @@ Inject(app)
 @app.before_request
 @inject("injector")
 def before_request(injector):
-    injector.map("version", "v1.0")
+    version = "v1.0"
     mysql = "mysql connection"
-    injector.map("mysql", mysql)
+    injector.map(version=version, mysql=mysql)
 
 
 @app.teardown_request
@@ -24,24 +24,15 @@ def teardown_request(exception, mysql):
 
 def authentication():
     def decorator(f):
+        @inject("injector")
         @wraps(f)
-        def decorated_function(*args, **kwargs):
-            from flask_inject import injector
-            injector().map("auth", "Auth Passed")
-            return f(*args, **kwargs)
+        def decorated_function(injector, *args, **kwargs):
+            injector.map(auth=True)
+            return injector.apply(["auth"], f, args, kwargs)
 
         return decorated_function
 
     return decorator
-
-
-@app.route("/headers")
-@inject("headers")
-def show_headers(headers):
-    ret = ""
-    for key, value in headers.iteritems():
-        ret += "%s: %s<br />" % (key, value)
-    return ret
 
 
 @app.route("/version")
@@ -60,9 +51,10 @@ def show_mysql(mysql):
 
 @app.route("/auth")
 @authentication()
-@inject("auth")
 def show_auth(auth):
-    return auth
+    if auth:
+        return "200"
+    return "401"
 
 
 if __name__ == "__main__":
