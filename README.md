@@ -1,7 +1,7 @@
 Flask-Inject
 ===
 
-A micro dependency injection framwork for Flask micro web framework :)
+A micro dependency injection framework for Flask micro web framework :)
 
 ## Usage
 
