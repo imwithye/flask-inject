@@ -98,6 +98,16 @@ def show_auth(auth):
     return "401"
 
 
+# You can use the url parameter with the injector together in your handler.
+@app.route("/auth/<int:user_id>")
+@authentication
+@inject("authorized:auth")
+def show_auth_by_user(auth, user_id):
+    if auth:
+        return "200 with user id: " + str(user_id)
+    return "401 with user id: " + str(user_id)
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     app.run(host="localhost", port=8080, use_reloader=True)

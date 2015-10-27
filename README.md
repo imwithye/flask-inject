@@ -102,3 +102,15 @@ def show_auth(auth):
         return "200"
     return "401"
 ```
+
+You can use the url parameter with the injector together in your handler.
+
+```python
+@app.route("/auth/<int:user_id>")
+@authentication
+@inject("authorized:auth")
+def show_auth_by_user(auth, user_id):
+    if auth:
+        return "200 with user id: " + str(user_id)
+    return "401 with user id: " + str(user_id)
+```
