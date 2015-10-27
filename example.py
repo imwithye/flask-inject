@@ -88,11 +88,12 @@ def authentication(f):
 
 # Then authorized is available for injecting to the handler.
 # Using @inject decorator to inject the dependencies to the handler.
+# You can use the : operator to rename the injected dependency
 @app.route("/auth")
 @authentication
-@inject("authorized")
-def show_auth(authorized):
-    if authorized:
+@inject("authorized:auth")
+def show_auth(auth):
+    if auth:
         return "200"
     return "401"
 
