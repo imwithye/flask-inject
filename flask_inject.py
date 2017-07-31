@@ -16,7 +16,7 @@ class Inject(object):
             self._base = dict()
 
         def map(self, *args, **kwargs):
-            for k, v in kwargs.iteritems():
+            for k, v in kwargs.items():
                 if not isinstance(k, str):
                     raise Inject.InjectException("Key shall be an instance of str but get %s" % str(type(k)))
                 self._base[k] = v
