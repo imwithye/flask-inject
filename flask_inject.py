@@ -52,6 +52,7 @@ class Inject(object):
 
     def _init_app(self, app):
         app.before_request(self._before_request)
+        app.before_first_request(self._before_request)
 
     def _before_request(self):
         _injector = self.Injector(self._injector)
